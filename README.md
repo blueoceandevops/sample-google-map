@@ -11,3 +11,6 @@ The application has three entities with corresponding screens:
 The *Map* screen displays the map with the center defined in `web-app.properties` by the `charts.map.defaultLatitude` and `charts.map.defaultLongitude` application properties. If you click to a salesperson picture, the map will display the corresponding territory polygon. If you click to a polygon, a modal window will be shown. The window contains salesperson details and a chart with data about related orders.
 
 Based on CUBA Platform 6.9.1
+
+## Issues
+Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems coressponding to this sample.
