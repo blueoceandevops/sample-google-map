@@ -8,7 +8,8 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.TrustedClientService;
+import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ import java.util.concurrent.Callable;
 public class PhotoController {
 
     @Inject
-    private LoginService loginService;
+    private TrustedClientService trustedClientService;
 
     @Inject
     private GlobalConfig globalConfig;
@@ -106,12 +107,13 @@ public class PhotoController {
      * @throws IOException  propagated from HttpServletResponse methods
      */
     private <T> T authenticated(HttpServletResponse response, Callable<T> callable) throws IOException {
-        UserSession anonymousUserSession = loginService.getSession(globalConfig.getAnonymousSessionId());
-        if (anonymousUserSession == null) {
+        try {
+            UserSession systemSession = trustedClientService.getSystemSession("MLdWm1Ik4NmM");
+            AppContext.setSecurityContext(new SecurityContext(systemSession));
+        } catch (LoginException ex) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
-        AppContext.setSecurityContext(new SecurityContext(anonymousUserSession));
         try {
             return callable.call();
         } catch (Exception e) {
